@@ -1,5 +1,6 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhhkcdN7o9F4NFpycDai_FzJEgf5UmxRrBtgcwGXbIwLhmVcgX_LPfjTZL-5DBXv3rPw/exec";
 let appData = { routes: [], buses: [], notices: [], users: [] };
+let isDataLoading = true; // ডেটা লোড হওয়া ট্র্যাক করার জন্য
 
 // ১. ডিকশনারি (ভাষা পরিবর্তন)
 const translations = {
@@ -42,15 +43,25 @@ window.onload = () => {
 
 async function fetchData() {
     const btn = document.getElementById('search-btn');
-    if (btn) btn.innerHTML = '<span class="spinner"></span>'; // লোডিং স্পিনার
+    if (btn) {
+        btn.disabled = true; // ডেটা লোড হওয়া পর্যন্ত বাটন লক থাকবে
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> তথ্য লোড হচ্ছে...';
+    }
     try {
         const res = await fetch(SCRIPT_URL);
         appData = await res.json();
+        isDataLoading = false; // লোড কমপ্লিট
         renderNotices();
     } catch (e) {
         console.error("Data Fetch Error:", e);
+        isDataLoading = false;
     } finally {
-        applyLanguage(currentLang); // বাটন টেক্সট আগের অবস্থায় আনা
+        if (btn) {
+            btn.disabled = false;
+            // বাটন স্ট্রাকচার ঠিক রেখে লেখা ফিরিয়ে আনা
+            btn.innerHTML = `<span data-lang="searchBtn"></span>`;
+            applyLanguage(currentLang);
+        }
     }
 }
 
@@ -74,8 +85,13 @@ function applyLanguage(lang) {
     if (endNode) endNode.placeholder = dict.toPlaceholder;
 }
 
-// ৪. বাস সার্চ লজিক (Professional Card Design)
+// ৪. বাস সার্চ লজিক (Fixed Empty Data Bug)
 function searchBuses() {
+    if (isDataLoading) {
+        alert(currentLang === 'bn' ? "অনুগ্রহ করে ব্যাকএন্ড ডাটা লোড হওয়া পর্যন্ত কয়েক সেকেন্ড অপেক্ষা করুন..." : "Please wait a moment for data to load...");
+        return;
+    }
+
     const startInput = document.getElementById('start-node');
     const endInput = document.getElementById('end-node');
     const resultArea = document.getElementById('result-area');
@@ -87,7 +103,6 @@ function searchBuses() {
     
     if (!start || !end) return;
 
-    // ফিল্টারিং লজিক
     const filteredBuses = (appData.buses || []).filter(bus => 
         bus.route && bus.route.toLowerCase().includes(start) && bus.route.toLowerCase().includes(end)
     );
@@ -124,25 +139,20 @@ function searchBuses() {
     });
 }
 
-// ৫. স্ক্রিন সুইচ এবং নেভিগেশন (Display Bug Fixed)
+// ৫. স্ক্রিন সুইচ এবং নেভিগেশন
 function switchTab(screenId, el) {
-    // সব স্ক্রিন হাইড করা
     document.querySelectorAll('.screen').forEach(s => {
         s.classList.remove('active');
         s.style.display = 'none';
     });
     
-    // সব নেভ আইটেম থেকে অ্যাক্টিভ ক্লাস রিমুভ করা
     document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
     
-    // নির্দিষ্ট স্ক্রিনটি শো করা
     const targetScreen = document.getElementById(screenId);
     if (targetScreen) {
         targetScreen.classList.add('active');
         targetScreen.style.display = 'block';
     }
-    
-    // ক্লিক করা বাটনে অ্যাক্টিভ ক্লাস দেওয়া
     if (el) el.classList.add('active');
 }
 
@@ -182,12 +192,10 @@ function toggleDarkMode() {
     body.setAttribute('data-theme', isDark ? 'light' : 'dark');
     
     const icon = document.getElementById('theme-icon');
-    if (icon) {
-        icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
-    }
+    if (icon) icon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
 }
 
-// ৮. লগইন ও প্রোফাইল লজিক (Missing Handlers Added)
+// ৮. লগইন ডাটা কালেকশন (Google Sheet Integration)
 function checkLogin() {
     const user = JSON.parse(localStorage.getItem('localUser'));
     const authUi = document.getElementById('auth-ui');
@@ -212,19 +220,54 @@ function checkLogin() {
     }
 }
 
-function handleLogin() {
-    const email = document.getElementById('l-email')?.value.trim();
-    const pass = document.getElementById('l-pass')?.value.trim();
+async function handleLogin() {
+    const emailInput = document.getElementById('l-email');
+    const passInput = document.getElementById('l-pass');
+    const loginBtn = document.querySelector('#login-form button');
+    
+    if (!emailInput || !passInput) return;
+    
+    const email = emailInput.value.trim();
+    const pass = passInput.value.trim();
     
     if (!email || !pass) {
-        alert("Please fill in all fields.");
+        alert(currentLang === 'bn' ? "সবগুলো ঘর পূরণ করুন।" : "Please fill in all fields.");
         return;
     }
 
-    // ডেমো লগইন সেশন (পরবর্তীতে ব্যাকএন্ড ভেরিফিকেশন যুক্ত করতে পারবেন)
-    const demoUser = { name: email.split('@')[0], email: email };
-    localStorage.setItem('localUser', JSON.stringify(demoUser));
-    checkLogin();
+    if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সংযোগ করা হচ্ছে...';
+    }
+
+    try {
+        // গুগল স্ক্রিপ্ট ব্যাকএন্ডে ডাটা POST করা হচ্ছে
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // CORS ব্লক এড়ানোর জন্য
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: "login",
+                email: email,
+                password: pass
+            })
+        });
+
+        // সফলভাবে সাবমিট হলে লোকাল সেশন তৈরি
+        const demoUser = { name: email.split('@')[0], email: email };
+        localStorage.setItem('localUser', JSON.stringify(demoUser));
+        checkLogin();
+        
+        alert(currentLang === 'bn' ? "লগইন সফল ও শিটে ডাটা সংরক্ষিত হয়েছে!" : "Login successful & saved to sheet!");
+    } catch (error) {
+        console.error("Login Error:", error);
+        alert("Server error, please try again.");
+    } finally {
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = `<span data-lang="loginBtn">${translations[currentLang].loginBtn}</span>`;
+        }
+    }
 }
 
 function handleLogout() {
@@ -232,7 +275,6 @@ function handleLogout() {
     checkLogin();
 }
 
-// ৯. অতিরিক্ত ফাংশনসমূহ (বাটন এরর এড়াতে)
 function toggleAuth(isLogin) {
     const title = document.querySelector('#login-form h3');
     const btn = document.querySelector('#login-form button span');
@@ -252,7 +294,6 @@ function toggleAuth(isLogin) {
 }
 
 function toggleSaveRoute(busId) {
-    // রুট সেভ করার বেসিক মেকানিজম
     let saved = JSON.parse(localStorage.getItem('savedRoutes')) || [];
     if (saved.includes(busId)) {
         saved = saved.filter(id => id !== busId);
