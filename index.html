@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sahaj Yatra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <header class="main-header">
+        <div class="logo">
+            <i class="fas fa-bus"></i> <span data-lang="appName">সহজ যাতায়াত</span>
+        </div>
+        <div class="header-icons">
+            <i class="fas fa-language" onclick="toggleLanguage()" style="font-size: 22px; cursor: pointer;" title="Change Language"></i>
+            <i class="fas fa-moon" id="theme-btn" onclick="toggleDarkMode()"></i>
+            <div class="notif-wrapper" onclick="toggleNoticeBoard()">
+                <i class="fas fa-bell"></i>
+                <span id="notice-dot"></span>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-content">
+        <section id="screen-home" class="screen active">
+            <div class="search-box">
+                <input type="text" id="start-node" placeholder="কোথা থেকে?">
+                <input type="text" id="end-node" placeholder="কোথায় যাবেন?">
+                <button onclick="searchBuses()" id="search-btn">
+                    <span id="search-text" data-lang="searchBtn">বাস খুঁজুন</span>
+                </button>
+            </div>
+            <div id="result-area"></div>
+        </section>
+
+        <section id="screen-profile" class="screen">
+            <div id="auth-ui">
+                <div id="login-form">
+                    <h3 data-lang="loginTitle">লগইন করুন</h3>
+                    <button onclick="handleLogin()"><span data-lang="loginBtn">প্রবেশ করুন</span></button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('screen-home', this)">
+            <i class="fas fa-search"></i><span data-lang="navSearch">খুঁজুন</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('screen-profile', this)">
+            <i class="fas fa-user"></i><span data-lang="navProfile">প্রোফাইল</span>
+        </div>
+    </nav>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
