@@ -1,3 +1,6 @@
+/* Google Fonts - সুন্দর বাংলা টাইপোগ্রাফির জন্য */
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
 :root {
     --primary: #00b894;
     --primary-dark: #009475;
@@ -5,8 +8,9 @@
     --card: #ffffff;
     --text: #2d3436;
     --sub-text: #636e72;
-    --shadow: 0 10px 30px rgba(0,0,0,0.08);
-    --nav-bg: rgba(255, 255, 255, 0.8);
+    --border: #e2e8f0;
+    --shadow: 0 10px 25px rgba(0,0,0,0.06);
+    --nav-bg: rgba(255, 255, 255, 0.85);
 }
 
 [data-theme='dark'] {
@@ -14,24 +18,27 @@
     --card: #1e1e1e;
     --text: #f5f6fa;
     --sub-text: #b2bec3;
+    --border: #2d2d2d;
+    --shadow: 0 10px 25px rgba(0,0,0,0.3);
     --nav-bg: rgba(30, 30, 30, 0.9);
 }
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
     -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg);
+    font-family: 'Hind Siliguri', 'Segoe UI', Roboto, sans-serif;
+    background-color: #2d3436; /* ডেস্কটপে দুই পাশে সুন্দর ব্যাকগ্রাউন্ড দেখানোর জন্য */
     color: var(--text);
     overflow: hidden;
     height: 100vh;
 }
 
+/* মূল অ্যাপ ফ্রেম (মোবাইল সাইজ লক) */
 .app-container {
     max-width: 480px;
     margin: 0 auto;
@@ -39,10 +46,11 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    box-shadow: 0 0 50px rgba(0,0,0,0.1);
+    background-color: var(--bg);
+    box-shadow: 0 0 50px rgba(0,0,0,0.2);
 }
 
-/* Glassmorphism Header */
+/* মডার্ন কার্ভড হেডার */
 .main-header {
     padding: 20px;
     background: var(--primary);
@@ -51,20 +59,79 @@ body {
     justify-content: space-between;
     align-items: center;
     border-radius: 0 0 25px 25px;
-    box-shadow: 0 4px 15px rgba(0,184,148,0.3);
+    box-shadow: 0 4px 20px rgba(0,184,148,0.25);
     z-index: 100;
 }
 
-.logo { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.logo { 
+    font-size: 20px; 
+    font-weight: 700; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}
 
-/* Elegant Search Box */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 18px;
+}
+
+.header-actions i {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.header-actions i:active {
+    transform: scale(0.85);
+}
+
+.notif-icon {
+    position: relative;
+}
+
+.dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #ff7675;
+    border-radius: 50%;
+    display: none;
+}
+
+/* স্ক্রিন কন্টেইনার এবং ম্যানেজমেন্ট (ওভারল্যাপ ফিক্স) */
+.screen-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.screen {
+    display: none; /* ডিফল্টভাবে সব স্ক্রিন বন্ধ থাকবে */
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 110px; /* বটম নেভের জন্য স্পেস */
+    scroll-behavior: smooth;
+}
+
+.screen.active {
+    display: block; /* শুধুমাত্র একটি স্ক্রিন সক্রিয় থাকবে */
+    animation: fadeIn 0.35s ease-out;
+}
+
+/* সুন্দর ওভারল্যাপড সার্চ বক্স */
 .search-container {
     background: var(--card);
-    margin: -30px 20px 20px 20px;
+    margin-top: -30px;
+    margin-bottom: 20px;
     padding: 25px;
     border-radius: 20px;
     box-shadow: var(--shadow);
-    z-index: 101;
+    border: 1px solid var(--border);
 }
 
 .input-group {
@@ -78,26 +145,30 @@ body {
     top: 50%;
     transform: translateY(-50%);
     color: var(--primary);
+    font-size: 16px;
 }
 
 input {
     width: 100%;
-    padding: 14px 14px 14px 45px;
-    border: 2px solid transparent;
+    padding: 14px 15px 14px 45px;
+    border: 1px solid var(--border);
     background: var(--bg);
     border-radius: 12px;
     color: var(--text);
     font-size: 15px;
-    transition: 0.3s;
+    font-family: inherit;
+    transition: all 0.3s ease;
 }
 
 input:focus {
     border-color: var(--primary);
     outline: none;
     background: var(--card);
+    box-shadow: 0 0 0 3px rgba(0,184,148,0.1);
 }
 
-button#search-btn {
+/* বাটনের প্রিমিয়াম ইফেক্টস */
+button {
     width: 100%;
     padding: 15px;
     background: var(--primary);
@@ -106,61 +177,220 @@ button#search-btn {
     border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
+    font-family: inherit;
     cursor: pointer;
-    transition: 0.3s transform active;
-    box-shadow: 0 5px 15px rgba(0,184,148,0.2);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0,184,148,0.2);
 }
 
-button#search-btn:active { transform: scale(0.97); }
+button:active { 
+    transform: scale(0.97); 
+    background: var(--primary-dark);
+}
 
-/* Screen Management */
-.screen {
-    flex: 1;
+/* বাস রেজাল্ট কার্ডস */
+.results-grid {
+    margin-top: 10px;
+}
+
+.bus-card {
+    background: var(--card);
+    padding: 18px;
+    border-radius: 16px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.bus-info { flex: 1; }
+
+.bus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.bus-name { 
+    font-weight: 700; 
+    color: var(--primary); 
+    font-size: 17px; 
+}
+
+.bus-type { 
+    font-size: 11px; 
+    background: rgba(0,184,148,0.1); 
+    color: var(--primary-dark); 
+    padding: 3px 10px; 
+    border-radius: 20px; 
+    font-weight: 600;
+}
+
+.bus-route {
+    color: var(--sub-text);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.bus-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 14px; 
+    border-top: 1px dashed var(--border);
+    padding-top: 8px;
+}
+
+.fare-tag { 
+    color: var(--primary-dark); 
+    font-weight: 700; 
+}
+
+.save-icon {
+    font-size: 20px;
+    color: #ff7675;
+    cursor: pointer;
+    margin-left: 15px;
+    transition: 0.2s;
+}
+
+.save-icon:active { transform: scale(1.2); }
+
+/* অথ ও প্রোফাইল কার্ড ফিক্স */
+.auth-card, .profile-card {
+    background: var(--card);
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-top: 10px;
+}
+
+.auth-card h3 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 20px;
+    text-align: center;
+}
+
+.toggle-auth {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.profile-card {
+    text-align: center;
+}
+
+.profile-card h2 { margin: 15px 0 5px 0; font-size: 22px; }
+.profile-card p { color: var(--sub-text); margin-bottom: 20px; font-size: 14px; }
+
+.logout-btn {
+    background: #ff7675;
+    box-shadow: 0 4px 15px rgba(255,118,117,0.2);
+}
+.logout-btn:active { background: #d63031; }
+
+/* নোটিশ মডাল ওভারলে */
+.notice-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+}
+
+.notice-modal {
+    background: var(--card);
+    width: 100%;
+    border-radius: 25px 25px 0 0;
+    padding: 25px;
+    max-height: 70%;
     overflow-y: auto;
-    padding: 10px 20px 100px 20px;
-    scroll-behavior: smooth;
+    animation: slideUp 0.3s ease-out;
 }
 
-/* Modern Bottom Nav */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
+
+.modal-header i { cursor: pointer; font-size: 20px; color: var(--sub-text); }
+
+.notice-item {
+    background: var(--bg);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--primary);
+}
+
+.notice-item strong { display: block; font-size: 16px; margin-bottom: 5px; }
+.notice-item p { font-size: 14px; color: var(--sub-text); }
+.notice-item small { color: #95a5a6; display: block; margin-top: 5px; font-size: 11px; }
+
+/* ফ্লোটিং বটম নেভিগেশন (iOS স্টাইল) */
 .bottom-nav {
     position: absolute;
-    bottom: 15px;
-    left: 15px;
-    right: 15px;
-    height: 70px;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    height: 68px;
     background: var(--nav-bg);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     display: flex;
     justify-content: space-around;
     align-items: center;
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    z-index: 999;
 }
 
 .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     color: var(--sub-text);
-    transition: 0.3s;
+    transition: all 0.3s ease;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    flex: 1;
 }
 
-.nav-item.active {
-    color: var(--primary);
+.nav-item i { font-size: 20px; transition: 0.2s; }
+.nav-item.active { color: var(--primary); }
+.nav-item.active i { transform: translateY(-2px); }
+
+/* ইউটিলিটি ক্লাসেস */
+.hidden { display: none !important; }
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
 }
 
-.nav-item i { font-size: 20px; }
-
-/* Notice Card */
-.notice-card {
-    background: var(--card);
-    padding: 15px;
-    border-radius: 15px;
-    border-left: 5px solid var(--primary);
-    margin-bottom: 15px;
-    box-shadow: var(--shadow);
-}
+/* অ্যানিমেশনসমূহ */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
